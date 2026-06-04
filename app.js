@@ -54,13 +54,16 @@
     const meta = topics.find((t) => t.id === topicId);
     if (!meta) return 0;
     if (meta.filter) return bank.filter(meta.filter).length;
-    return bank.filter((q) => q.topic === topicId).length;
+    return bank.filter(
+      (q) => q.topic === topicId && q.source !== "professor"
+    ).length;
   }
 
   function questionMatchesTopic(q, topicId) {
     const meta = topics.find((t) => t.id === topicId);
     if (!meta) return false;
     if (meta.filter) return meta.filter(q);
+    if (q.source === "professor") return false;
     return q.topic === topicId;
   }
 
@@ -194,7 +197,7 @@
     els.qTopic.textContent = topicLabel(q.topic);
     els.qSource.textContent =
       q.source === "professor"
-        ? "ชุดอาจารย์"
+        ? "ชุดอาจารย์ (quiztext)"
         : q.source === "deep-dive"
           ? "Deep Dive"
           : q.source === "calc-long"
@@ -399,21 +402,64 @@
     updatePoolStat();
   }
 
+  const TOPIC_GROUPS = [
+    {
+      title: "หมวด I — กฎหมายภาษีเงินได้บุคคลธรรมดา (ภงด.)",
+      ids: [
+        "pit-law-base",
+        "pit-law-calc",
+        "pit-law-types",
+        "pit-law-exempt",
+        "pit-law-allow",
+        "pit-law-forms",
+      ],
+    },
+    {
+      title: "หมวด II — ภาษีเงินได้นิติบุคคล (ภงด.นิติ)",
+      ids: ["cit-base", "cit-pit-cross", "cit-forms-worked"],
+    },
+    {
+      title: "หมวด III — การบริหารและวางแผนภาษีเงินได้บุคคลธรรมดา",
+      ids: ["plan-overview", "plan-ethics"],
+    },
+    {
+      title: "ชุดข้อสอบอาจารย์",
+      ids: ["professor"],
+    },
+  ];
+
+  function appendTopicCheckbox(topicId) {
+    const t = topics.find((x) => x.id === topicId);
+    if (!t) return;
+    const count = countForTopic(t.id);
+    const label = document.createElement("label");
+    const cb = document.createElement("input");
+    cb.type = "checkbox";
+    cb.value = t.id;
+    cb.checked = true;
+    cb.addEventListener("change", updatePoolStat);
+    const span = document.createElement("span");
+    span.innerHTML = `${escapeHtml(t.label)} <span class="topic-count">(${count})</span>`;
+    label.appendChild(cb);
+    label.appendChild(span);
+    els.topicGrid.appendChild(label);
+  }
+
   function buildTopicGrid() {
     els.topicGrid.innerHTML = "";
+    const seen = new Set();
+    TOPIC_GROUPS.forEach((group) => {
+      const heading = document.createElement("div");
+      heading.className = "topic-group-title";
+      heading.textContent = group.title;
+      els.topicGrid.appendChild(heading);
+      group.ids.forEach((id) => {
+        seen.add(id);
+        appendTopicCheckbox(id);
+      });
+    });
     topics.forEach((t) => {
-      const count = countForTopic(t.id);
-      const label = document.createElement("label");
-      const cb = document.createElement("input");
-      cb.type = "checkbox";
-      cb.value = t.id;
-      cb.checked = true;
-      cb.addEventListener("change", updatePoolStat);
-      const span = document.createElement("span");
-      span.innerHTML = `${escapeHtml(t.label)} <span class="topic-count">(${count})</span>`;
-      label.appendChild(cb);
-      label.appendChild(span);
-      els.topicGrid.appendChild(label);
+      if (!seen.has(t.id)) appendTopicCheckbox(t.id);
     });
   }
 

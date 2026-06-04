@@ -96,6 +96,16 @@
     }
     .topic-grid input { margin-top: .2rem; flex-shrink: 0; }
     .topic-count { color: var(--muted); font-size: .82rem; }
+    .topic-group-title {
+      grid-column: 1 / -1;
+      font-size: .78rem;
+      font-weight: 700;
+      color: var(--accent);
+      margin: .35rem 0 .1rem;
+      padding-top: .25rem;
+      border-top: 1px solid var(--border);
+    }
+    .topic-group-title:first-child { border-top: none; margin-top: 0; padding-top: 0; }
     .pool-stat {
       font-size: .88rem;
       color: var(--accent2);
@@ -288,7 +298,7 @@
         เลือก<strong>หลายหมวด</strong>ที่ต้องการทบทวน · กำหนด<strong>จำนวนข้อ</strong>ในชุดฝึก · กด ส่งคำตอบ เพื่อดูเฉลย · จบแบบทดสอบ เมื่อหยุดกลางทาง
       </p>
       <div class="field">
-        <label>หมวดที่ต้องการทบทวน (เลือกได้หลายหมวด)</label>
+        <label>หมวดตาม Deep Dive จัดใหม่ (เลือกได้หลายหมวด · ตัวเลข I.1–III.2 + ชุดอาจารย์)</label>
         <div class="topic-toolbar">
           <button type="button" class="btn-secondary" id="btn-topics-all">เลือกทั้งหมด</button>
           <button type="button" class="btn-secondary" id="btn-topics-none">ล้างทั้งหมด</button>
